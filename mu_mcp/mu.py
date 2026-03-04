@@ -88,6 +88,19 @@ async def find(
     return [Email.model_validate(_normalize(item)) for item in json.loads(stdout)]
 
 
+async def mailboxes() -> list[str]:
+    """Return sorted list of all unique maildirs in the mu index."""
+    stdout = await _run_mu(
+        "find",
+        "--format=plain",
+        "--fields=m",
+        "--maxnum=1000000",
+        "date:..",
+    )
+    lines = stdout.decode().splitlines()
+    return sorted({line.strip() for line in lines if line.strip()})
+
+
 async def view(path: str) -> str:
     """Run mu view on a specific message path and return the raw email text."""
     stdout = await _run_mu("view", "--format=plain", path)

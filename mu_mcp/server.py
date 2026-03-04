@@ -1,7 +1,7 @@
 from mcp.server.fastmcp import FastMCP
 
 from .models import Email
-from .mu import find, view
+from .mu import find, mailboxes, view
 
 mcp = FastMCP("mu-mcp")
 
@@ -21,6 +21,15 @@ async def search_emails(
     sort_order: "desc" for newest/largest first, "asc" for oldest/smallest first
     """
     return await find(query, max_results, sort_field, sort_order)
+
+
+@mcp.tool()
+async def list_mailboxes() -> list[str]:
+    """List all maildirs in the mu index.
+
+    Call this first to discover maildir names before using maildir: in queries.
+    """
+    return await mailboxes()
 
 
 @mcp.tool()
