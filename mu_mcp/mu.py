@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import json
 from typing import Any
 
@@ -29,16 +30,18 @@ def _strip_colons(obj: Any) -> Any:
     return obj
 
 
-def _parse_date(val: Any) -> int:
-    """Convert mu time-val [high, low, microseconds] (Emacs time) to unix timestamp.
+def _parse_date(val: Any) -> str:
+    """Convert mu time-val [high, low, microseconds] (Emacs time) to ISO 8601 UTC.
 
     Unix timestamp = high * 65536 + low
     """
     if isinstance(val, list) and len(val) >= 2:
-        return val[0] * 65536 + val[1]
-    if isinstance(val, int):
-        return val
-    return 0
+        ts = val[0] * 65536 + val[1]
+    elif isinstance(val, int):
+        ts = val
+    else:
+        return ""
+    return datetime.datetime.fromtimestamp(ts, tz=datetime.UTC).isoformat()
 
 
 def _parse_flags(val: Any) -> list[str]:

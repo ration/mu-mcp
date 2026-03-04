@@ -6,6 +6,8 @@ import pytest
 from mu_mcp.models import Address, Email
 from mu_mcp.mu import _parse_date, _parse_flags, find, view
 
+_EXPECTED_DATE = "2020-04-08T12:57:22+00:00"
+
 # mu JSON uses colon-prefixed keys and Emacs time-val for dates
 _SAMPLE_RAW = {
     ":subject": "Hello",
@@ -31,11 +33,11 @@ def _mock_proc(stdout: bytes, returncode: int = 0) -> MagicMock:
 
 
 def test_parse_date_emacs_timeval() -> None:
-    assert _parse_date([24205, 51762, 0]) == 24205 * 65536 + 51762
+    assert _parse_date([24205, 51762, 0]) == _EXPECTED_DATE
 
 
 def test_parse_date_int_passthrough() -> None:
-    assert _parse_date(1700000000) == 1700000000
+    assert _parse_date(1700000000) == "2023-11-14T22:13:20+00:00"
 
 
 def test_parse_flags_dict() -> None:
@@ -55,7 +57,7 @@ async def test_find_returns_emails() -> None:
     assert results[0].subject == "Hello"
     assert results[0].from_[0].email == "alice@example.com"
     assert results[0].flags == ["attach", "seen"]
-    assert results[0].date == 24205 * 65536 + 51762
+    assert results[0].date == _EXPECTED_DATE
 
 
 @pytest.mark.asyncio

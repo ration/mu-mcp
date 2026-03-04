@@ -13,7 +13,7 @@ class Email(BaseModel):
     from_: list[Address] = Field(alias="from")
     to: list[Address] = Field(default_factory=list)
     cc: list[Address] = Field(default_factory=list)
-    date: int  # unix timestamp
+    date: str  # ISO 8601 UTC
     path: str
     message_id: str | None = Field(alias="message-id", default=None)
     size: int = 0
