@@ -3,7 +3,7 @@ import datetime
 import json
 from typing import Any
 
-from .models import Email
+from .models import Contact, Email
 
 _MU_NO_RESULTS_EXIT_CODE = 4
 
@@ -86,6 +86,25 @@ async def find(
     if not stdout.strip():
         return []
     return [Email.model_validate(_normalize(item)) for item in json.loads(stdout)]
+
+
+async def contacts(query: str, max_results: int = 20) -> list[Contact]:
+    """Run mu cfind and return parsed Contact objects."""
+    proc = await asyncio.create_subprocess_exec(
+        "mu",
+        "cfind",
+        "--format=json",
+        f"--maxnum={max_results}",
+        query,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    stdout, stderr = await proc.communicate()
+    if proc.returncode != 0:
+        raise RuntimeError(f"mu cfind failed: {stderr.decode().strip()}")
+    if not stdout.strip():
+        return []
+    return [Contact.model_validate(item) for item in json.loads(stdout)]
 
 
 async def mailboxes() -> list[str]:

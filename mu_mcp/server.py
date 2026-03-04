@@ -1,7 +1,7 @@
 from mcp.server.fastmcp import FastMCP
 
-from .models import Email
-from .mu import find, mailboxes, view
+from .models import Contact, Email
+from .mu import contacts, find, mailboxes, view
 
 mcp = FastMCP("mu-mcp")
 
@@ -21,6 +21,16 @@ async def search_emails(
     sort_order: "desc" for newest/largest first, "asc" for oldest/smallest first
     """
     return await find(query, max_results, sort_field, sort_order)
+
+
+@mcp.tool()
+async def find_contacts(query: str, max_results: int = 20) -> list[Contact]:
+    """Search contacts by name or email address using mu cfind.
+
+    Use this to resolve a person's name to their exact email address before
+    searching emails with from: or to: filters.
+    """
+    return await contacts(query, max_results)
 
 
 @mcp.tool()

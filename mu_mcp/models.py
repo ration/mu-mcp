@@ -6,6 +6,15 @@ class Address(BaseModel):
     email: str
 
 
+class Contact(BaseModel):
+    email: str
+    name: str | None = None
+    display: str
+    last_seen: str = Field(alias="last-seen-iso", default="")
+    personal: bool = False
+    frequency: int = 0
+
+
 class Email(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
