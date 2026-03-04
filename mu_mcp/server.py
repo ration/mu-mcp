@@ -1,7 +1,7 @@
 from mcp.server.fastmcp import FastMCP
 
 from .models import Contact, Email
-from .mu import contacts, find, mailboxes, view
+from .mu import contacts, count, find, mailboxes, view
 
 mcp = FastMCP("mu-mcp")
 
@@ -21,6 +21,15 @@ async def search_emails(
     sort_order: "desc" for newest/largest first, "asc" for oldest/smallest first
     """
     return await find(query, max_results, sort_field, sort_order)
+
+
+@mcp.tool()
+async def count_emails(query: str) -> int:
+    """Count emails matching a query without fetching their content.
+
+    Use this when the user asks 'how many emails' rather than asking to see them.
+    """
+    return await count(query)
 
 
 @mcp.tool()

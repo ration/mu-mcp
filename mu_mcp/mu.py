@@ -88,6 +88,21 @@ async def find(
     return [Email.model_validate(_normalize(item)) for item in json.loads(stdout)]
 
 
+async def count(query: str) -> int:
+    """Count emails matching a query."""
+    stdout = await _run_mu(
+        "find",
+        "--format=plain",
+        "--fields=i",
+        "--maxnum=1000000",
+        "--nocolor",
+        query,
+    )
+    if not stdout.strip():
+        return 0
+    return sum(1 for line in stdout.decode().splitlines() if line.strip())
+
+
 async def contacts(query: str, max_results: int = 20) -> list[Contact]:
     """Run mu cfind and return parsed Contact objects."""
     proc = await asyncio.create_subprocess_exec(
